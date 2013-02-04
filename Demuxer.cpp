@@ -91,6 +91,7 @@ void Demuxer::async_open(
 	WideCharToMultiByte(CP_ACP, 0, config->Data(), -1, configc, MAX_PATH, 0, 0);
 
 	self_ref_ = this;
+	callback_ = callback;
 	PPBOX_AsyncOpenEx(playlinkc, configc, &self_ref_, s_call_back);
 }
 
