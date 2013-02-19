@@ -143,6 +143,8 @@ namespace PpboxRT
     public:
         Demuxer();
 
+        virtual ~Demuxer();
+
     public:
 		void async_open(
 			String ^ playlink, 
@@ -168,6 +170,7 @@ namespace PpboxRT
 	private:
 		Demuxer ^ self_ref_;
 		Callback ^ callback_;
+        CRITICAL_SECTION mutex_;
     };
 
 }

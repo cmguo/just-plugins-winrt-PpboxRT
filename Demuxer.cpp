@@ -1,10 +1,10 @@
 ﻿// Demuxer.cpp
 
+#include <windows.h>
+
 #include "Demuxer.h"
 
 #include <plugins/ppbox/ppbox.h>
-
-#include <windows.h>
 
 using namespace PpboxRT;
 using namespace Platform;
@@ -71,12 +71,18 @@ Sample::Sample(
 	if (sample.is_discontinuity) {
 		flag_ |= discontinue;
 	}
-	time_ = sample.start_time;
+	time_ = sample.decode_time + sample.composite_time_delta;
 	data_ = ref new Platform::Array<uint8>((uint8 *)sample.buffer, sample.buffer_length);
 }
 
 Demuxer::Demuxer()
 {
+    InitializeCriticalSectionEx(&mutex_, 100, 0);
+}
+
+Demuxer::~Demuxer()
+{
+    DeleteCriticalSection(&mutex_);
 }
 
 void Demuxer::async_open(
@@ -114,17 +120,22 @@ Error Demuxer::get_media(
 Error Demuxer::seek(
 	uint64 time)
 {
-	return (Error)PPBOX_Seek((PP_uint32)(time / 10000));
+    EnterCriticalSection(&mutex_);
+	PP_err ec = PPBOX_Seek((PP_uint32)(time / 10000));
+    LeaveCriticalSection(&mutex_);
+	return (Error)ec;
 }
 
 Error Demuxer::get_sample(
 	Sample ^* sample)
 {
+    EnterCriticalSection(&mutex_);
 	PPBOX_SampleEx2 s;
 	PP_err ec = PPBOX_ReadSampleEx2(&s);
 	if (ec == 0) {
 		*sample = Access::new_sample(s);
 	}
+    LeaveCriticalSection(&mutex_);
 	return (Error)ec;
 }
 
