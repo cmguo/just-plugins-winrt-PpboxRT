@@ -38,6 +38,7 @@ namespace PpboxRT
         audio_aac = 2, 
         audio_mp3 = 3, 
         audio_wma = 4,
+        video_wmv = 5, 
     };
 
     public value struct VideoInfo
