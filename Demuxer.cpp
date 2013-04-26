@@ -4,6 +4,7 @@
 
 #include "Demuxer.h"
 
+#define PPBOX_IMPORT_FUNC
 #include <plugins/ppbox/ppbox.h>
 
 using namespace PpboxRT;
