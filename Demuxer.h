@@ -3,8 +3,8 @@
 using namespace Platform;
 using namespace Windows::Foundation::Collections;
 
-struct PPBOX_StreamInfoEx;
-struct PPBOX_SampleEx2;
+struct PPBOX_StreamInfo;
+struct PPBOX_Sample;
 
 namespace PpboxRT
 {
@@ -74,7 +74,7 @@ namespace PpboxRT
 
 	private:
 		Stream(
-			PPBOX_StreamInfoEx & stream);
+			PPBOX_StreamInfo & stream);
 
 		friend class Access;
 
@@ -122,7 +122,7 @@ namespace PpboxRT
 
 	private:
 		Sample(
-			PPBOX_SampleEx2 & sample);
+			PPBOX_Sample & sample);
 
 		friend class Access;
 

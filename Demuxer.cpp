@@ -15,7 +15,7 @@ namespace PpboxRT
 	{
 	public:
 		static Stream ^ new_stream(
-			PPBOX_StreamInfoEx & stream)
+			PPBOX_StreamInfo & stream)
 		{
 			return ref new Stream(stream);
 		}
@@ -28,7 +28,7 @@ namespace PpboxRT
 		}
 
 		static Sample ^ new_sample(
-			PPBOX_SampleEx2 & sample)
+			PPBOX_Sample & sample)
 		{
 			return ref new Sample(sample);
 		}
@@ -36,7 +36,7 @@ namespace PpboxRT
 }
 
 Stream::Stream(
-	PPBOX_StreamInfoEx & info)
+	PPBOX_StreamInfo & info)
 {
 	type_ = (StreamType)info.type;
 	sub_type_ = (StreamSubType)info.sub_type;
@@ -61,7 +61,7 @@ Media::Media(
 }
 
 Sample::Sample(
-	PPBOX_SampleEx2 & sample)
+	PPBOX_Sample & sample)
 {
 	index_ = sample.stream_index;
 	flag_ = 0;
@@ -108,8 +108,8 @@ Error Demuxer::get_media(
 	PP_uint32 n = PPBOX_GetStreamCount();
 	Array<Stream ^> ^ streams = ref new Platform::Array<Stream ^>(n);
 	for (PP_uint32 i = 0; i < n; ++i) {
-		PPBOX_StreamInfoEx info;
-		PPBOX_GetStreamInfoEx(i, &info);
+		PPBOX_StreamInfo info;
+		PPBOX_GetStreamInfo(i, &info);
 		Stream ^ s = Access::new_stream(info);
 		streams->set(i, s);
 	}
@@ -130,8 +130,8 @@ Error Demuxer::get_sample(
 	Sample ^* sample)
 {
     EnterCriticalSection(&mutex_);
-	PPBOX_SampleEx2 s;
-	PP_err ec = PPBOX_ReadSampleEx2(&s);
+	PPBOX_Sample s;
+	PP_err ec = PPBOX_ReadSample(&s);
 	if (ec == 0) {
 		*sample = Access::new_sample(s);
 	}
