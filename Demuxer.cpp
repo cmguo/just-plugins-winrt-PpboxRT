@@ -68,7 +68,7 @@ Sample::Sample(
 	if (sample.flags & f_sync) {
 		flag_ |= sync;
 	}
-	if (sample.is_discontinuity) {
+	if (sample.flags & f_discontinuity) {
 		flag_ |= discontinue;
 	}
 	time_ = sample.decode_time + sample.composite_time_delta;
