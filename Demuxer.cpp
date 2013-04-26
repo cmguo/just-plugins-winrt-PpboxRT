@@ -63,16 +63,16 @@ Media::Media(
 Sample::Sample(
 	PPBOX_Sample & sample)
 {
-	index_ = sample.stream_index;
+	index_ = sample.itrack;
 	flag_ = 0;
-	if (sample.is_sync) {
+	if (sample.flags & f_sync) {
 		flag_ |= sync;
 	}
 	if (sample.is_discontinuity) {
 		flag_ |= discontinue;
 	}
 	time_ = sample.decode_time + sample.composite_time_delta;
-	data_ = ref new Platform::Array<uint8>((uint8 *)sample.buffer, sample.buffer_length);
+	data_ = ref new Platform::Array<uint8>((uint8 *)sample.buffer, sample.length);
 }
 
 Demuxer::Demuxer()
