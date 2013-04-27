@@ -66,14 +66,14 @@ Sample::Sample(
 {
 	index_ = sample.itrack;
 	flag_ = 0;
-	if (sample.flags & f_sync) {
+	if (sample.flags & PPBOX_SampleFlag::sync) {
 		flag_ |= sync;
 	}
-	if (sample.flags & f_discontinuity) {
+	if (sample.flags & PPBOX_SampleFlag::discontinuity) {
 		flag_ |= discontinue;
 	}
 	time_ = sample.decode_time + sample.composite_time_delta;
-	data_ = ref new Platform::Array<uint8>((uint8 *)sample.buffer, sample.length);
+	data_ = ref new Platform::Array<uint8>((uint8 *)sample.buffer, sample.size);
 }
 
 Demuxer::Demuxer()
