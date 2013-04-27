@@ -2,10 +2,8 @@
 
 #include <windows.h>
 
-#include "Demuxer.h"
-
 #define PPBOX_IMPORT_FUNC
-#include <plugins/ppbox/ppbox.h>
+#include "Demuxer.h"
 
 using namespace PpboxRT;
 using namespace Platform;

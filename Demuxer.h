@@ -3,8 +3,7 @@
 using namespace Platform;
 using namespace Windows::Foundation::Collections;
 
-struct PPBOX_StreamInfo;
-struct PPBOX_Sample;
+#include <plugins/ppbox/ppbox.h>
 
 namespace PpboxRT
 {
@@ -28,17 +27,17 @@ namespace PpboxRT
 
 	public enum class StreamType: int
     {
-        video = 1, 
-        audio = 2, 
+        video = PPBOX_StreamType::VIDE, 
+        audio = PPBOX_StreamType::AUDI, 
     };
 
 	public enum class StreamSubType: int
     {
-        video_avc = 1, 
-        audio_aac = 2, 
-        audio_mp3 = 3, 
-        audio_wma = 4,
-        video_wmv = 5, 
+        video_avc = PPBOX_VideoSubType::AVC1, 
+        audio_aac = PPBOX_AudioSubType::MP4A, 
+        audio_mp3 = PPBOX_AudioSubType::MP1A, 
+        audio_wma = PPBOX_AudioSubType::WMA2,
+        video_wmv = PPBOX_VideoSubType::WMV3, 
     };
 
     public value struct VideoInfo
