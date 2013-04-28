@@ -2,77 +2,10 @@
 
 #include <windows.h>
 
-#define PPBOX_IMPORT_FUNC
 #include "Demuxer.h"
 
 using namespace PpboxRT;
 using namespace Platform;
-
-namespace PpboxRT
-{
-	class Access
-	{
-	public:
-		static Stream ^ new_stream(
-			PPBOX_StreamInfo & stream)
-		{
-			return ref new Stream(stream);
-		}
-
-		static Media ^ new_media(
-			uint64 duration, 
-			Array<Stream ^> ^ streams)
-		{
-			return ref new Media(duration, streams);
-		}
-
-		static Sample ^ new_sample(
-			PPBOX_Sample & sample)
-		{
-			return ref new Sample(sample);
-		}
-	};
-}
-
-Stream::Stream(
-	PPBOX_StreamInfo & info)
-{
-	type_ = (StreamType)info.type;
-	sub_type_ = (StreamSubType)info.sub_type;
-	if (type_ == StreamType::video) {
-		video_.width = info.video_format.width;
-		video_.height = info.video_format.height;
-		video_.frame_rate = info.video_format.frame_rate;
-	} else {
-		audio_.channel_count = info.audio_format.channel_count;
-		audio_.sample_rate = info.audio_format.sample_rate;
-		audio_.sample_size = info.audio_format.sample_size;
-	}
-	codec_data_ = ref new Platform::Array<uint8>((uint8 *)info.format_buffer, info.format_size);
-}
-
-Media::Media(
-	uint64 duration, 
-	Array<Stream ^> ^ streams)
-	: duration_(duration)
-	, streams_(streams)
-{
-}
-
-Sample::Sample(
-	PPBOX_Sample & sample)
-{
-	index_ = sample.itrack;
-	flag_ = 0;
-	if (sample.flags & PPBOX_SampleFlag::sync) {
-		flag_ |= sync;
-	}
-	if (sample.flags & PPBOX_SampleFlag::discontinuity) {
-		flag_ |= discontinue;
-	}
-	time_ = sample.decode_time + sample.composite_time_delta;
-	data_ = ref new Platform::Array<uint8>((uint8 *)sample.buffer, sample.size);
-}
 
 Demuxer::Demuxer()
 {
@@ -109,10 +42,10 @@ Error Demuxer::get_media(
 	for (PP_uint32 i = 0; i < n; ++i) {
 		PPBOX_StreamInfo info;
 		PPBOX_GetStreamInfo(i, &info);
-		Stream ^ s = Access::new_stream(info);
+		Stream ^ s = ref new Stream(info);
 		streams->set(i, s);
 	}
-	*media = Access::new_media(d * 10000, streams);
+	*media = ref new Media(d * 10000, streams);
 	return Error::success;
 }
 
@@ -132,7 +65,7 @@ Error Demuxer::get_sample(
 	PPBOX_Sample s;
 	PP_err ec = PPBOX_ReadSample(&s);
 	if (ec == 0) {
-		*sample = Access::new_sample(s);
+		*sample = ref new Sample(s);
 	}
     LeaveCriticalSection(&mutex_);
 	return (Error)ec;
