@@ -1,16 +1,23 @@
 ﻿// CameraCaptureSampleSink.cpp
 
-#include "Format.h"
 #include "CameraCaptureSampleSink.h"
 
 using namespace PpboxRT;
 
 void CameraCaptureSampleSink::init(
-    PPBOX_HANDLE capture, 
+    Callback_OnSampleAvailable callback, 
+    Capture ^ capture, 
     UINT32 itrack)
 {
+    callback_ = callback;
     capture_ = capture;
     itrack_ = itrack;
+}
+
+void CameraCaptureSampleSink::close()
+{
+    callback_ = NULL;
+    capture_ = nullptr;
 }
 
 // Called each time a captured frame is available	
@@ -20,12 +27,5 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 	DWORD cbSample,
 	BYTE* pSample)
 {
-	PPBOX_Sample sample;
-    memset(&sample, 0, sizeof(sample));
-    sample.itrack = itrack_;
-    sample.decode_time = hnsPresentationTime;
-    sample.duration = (PP_uint32)hnsSampleDuration;
-    sample.size = cbSample;
-    sample.buffer = pSample;
-    PPBOX_CapturePutSample(capture_, &sample);
+    callback_(capture_, itrack_, hnsPresentationTime, hnsSampleDuration, cbSample, pSample);
 }

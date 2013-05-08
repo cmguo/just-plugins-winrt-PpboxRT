@@ -28,6 +28,7 @@ Stream::Stream(
 		audio_.sample_rate = info.audio_format.sample_rate;
 		audio_.sample_size = info.audio_format.sample_size;
 	}
+    format_type = (FormatType)info.format_type;
 	codec_data_ = ref new Platform::Array<uint8>((uint8 *)info.format_buffer, info.format_size);
 }
 
@@ -47,6 +48,7 @@ void Stream::to_info(
 		info.audio_format.sample_rate = audio_.sample_rate;
 		info.audio_format.sample_size = audio_.sample_size;
 	}
+    info.format_type = (PP_uint32)format_type;
     info.format_size = codec_data_->Length;
     PP_uchar * buffer = new PP_uchar[codec_data_->Length];
     memcpy(buffer, codec_data_->Data, codec_data_->Length);
@@ -81,5 +83,5 @@ Sample::Sample(
 		flag_ |= discontinue;
 	}
 	time_ = sample.decode_time + sample.composite_time_delta;
-	data_ = ref new Platform::Array<uint8>((uint8 *)sample.buffer, sample.size);
+	data_ = Platform::ArrayReference<uint8>((uint8 *)sample.buffer, sample.size);
 }

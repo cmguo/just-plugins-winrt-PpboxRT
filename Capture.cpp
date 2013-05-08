@@ -31,6 +31,8 @@ Error Capture::open(
 
     pAudioVideoCaptureDevice = device;
 
+    setup_preview_sink();
+
     WideCharToMultiByte(CP_ACP, 0, device->ToString()->Data(), -1, namec, MAX_PATH, 0, 0);
     WideCharToMultiByte(CP_ACP, 0, dest->Data(), -1, destc, MAX_PATH, 0, 0);
 
@@ -49,13 +51,12 @@ Error Capture::set_media(
     config.stream_count = media->streams->Length;
     config.get_sample_buffers = NULL;
     config.free_sample = NULL;
-    PP_err ec = PPBOX_CaptureInit(capture_, &config);
+    PP_err ec = ppbox_success;
+    ec = PPBOX_CaptureInit(capture_, &config);
 
     if (ec != ppbox_success) {
         return (Error)ec;
     }
-
-    setup_preview_sink();
 
     for (uint32 i = 0; i < media->streams->Length; i++)
     {
@@ -68,12 +69,36 @@ Error Capture::set_media(
             break;
     }
 
+    media_ = media;
+
     return (Error)ec;
 }
+
+#define SAFE_RELEASE(p) if (p) { p->Release(); p = NULL; }
+#define SAFE_CLOSE_RELEASE(p) if (p) { p->close(); p->Release(); p = NULL; }
 
 void Capture::close()
 {
     PPBOX_CaptureDestroy(capture_);
+
+    SAFE_CLOSE_RELEASE(pCameraCaptureSampleSinkAudio);
+    SAFE_CLOSE_RELEASE(pCameraCaptureSampleSinkVideo);
+
+    //pCameraCaptureDeviceNative->SetPreviewSink(NULL);
+
+    //SAFE_CLOSE_RELEASE(pCameraCapturePreviewSink);
+    SAFE_RELEASE(pCameraCapturePreviewSink);
+    SAFE_RELEASE(pCameraCaptureDeviceNative);
+    SAFE_RELEASE(pAudioVideoCaptureDeviceNative);
+
+    pAudioVideoCaptureDevice = nullptr;
+    media_ = nullptr;
+}
+
+void Capture::get_preview_pixels(
+    Platform::WriteOnlyArray<int32> ^ out)
+{
+    memcpy(out->Data, pCameraCapturePreviewSink->pixels(), out->Length * 4);
 }
 
 HRESULT Capture::setup_preview_sink()
@@ -115,13 +140,13 @@ HRESULT Capture::setup_sample_sink(
         // Initialize and set the CaptureSampleSink class as sink for captures samples
         MakeAndInitialize<CameraCaptureSampleSink>(&pCameraCaptureSampleSinkVideo);
         if (SUCCEEDED(hr)) {
-            pCameraCaptureSampleSinkVideo->init(capture_, index);
+            pCameraCaptureSampleSinkVideo->init(on_capture_first_sample, this, index);
             pAudioVideoCaptureDeviceNative->SetVideoSampleSink(pCameraCaptureSampleSinkVideo);
         }
     } else {
         hr = MakeAndInitialize<CameraCaptureSampleSink>(&pCameraCaptureSampleSinkAudio);
         if (SUCCEEDED(hr)) {
-            pCameraCaptureSampleSinkAudio->init(capture_, index);
+            pCameraCaptureSampleSinkAudio->init(on_capture_first_sample, this, index);
             hr = pAudioVideoCaptureDeviceNative->SetAudioSampleSink(pCameraCaptureSampleSinkAudio);
         }
     }
@@ -136,8 +161,78 @@ void Capture::on_preview_sample(
     UINT height,
     BYTE* pixels)
 {
-    PPBOX_Sample sample;
-    sample.size = width * height * 4;
-    sample.buffer = pixels;
-    capture->preview_frame_available(capture, ref new Sample(sample));
+    //PPBOX_Sample sample;
+    //sample.size = width * height * 4;
+    //sample.buffer = pixels;
+    capture->preview_frame_available(capture);
 }
+
+void Capture::on_capture_first_sample(
+    Capture ^ capture, 
+    UINT itrack,
+    ULONGLONG hnsPresentationTime,
+    ULONGLONG hnsSampleDuration,
+    DWORD cbSample,
+    BYTE* pSample)
+{
+    Stream ^ stream = capture->media_->streams[itrack];
+    if (stream->type == StreamType::video) {
+        capture->pCameraCaptureSampleSinkVideo->init(on_capture_sample, capture, itrack);
+        BYTE * p = (BYTE *)memchr(pSample, 0x67, cbSample);
+        BYTE * b = p - 4;
+        p = (BYTE *)memchr(pSample, 0x65, cbSample);
+        BYTE * e = p - 4;
+        stream->codec_data = ArrayReference<PP_uchar>(b, e - b);
+        PPBOX_StreamInfo info;
+        stream->to_info(info);
+        PPBOX_CaptureSetStream(capture->capture_, itrack, &info);
+    } else {
+        capture->pCameraCaptureSampleSinkAudio->init(on_capture_sample, capture, itrack);
+        uint32 frequency_table[] = 
+        {
+            96000, 88200, 64000, 48000, 
+            44100, 32000, 24000, 22050, 
+            16000, 12000, 11025, 8000,  
+            7350,  
+        };
+        PP_uchar object_type = 2; // AAC LC
+        PP_uchar frequency_index = std::find(frequency_table, frequency_table + 13, stream->audio.sample_rate) - frequency_table;
+        PP_uchar channel_count = stream->audio.channel_count;
+        PP_uchar AacConfig[2] = {
+            (object_type << 3) | (frequency_index >> 1), 
+            (frequency_index << 7) | (channel_count << 3)
+        };
+        stream->codec_data = ArrayReference<PP_uchar>(AacConfig, sizeof(AacConfig));
+        PPBOX_StreamInfo info;
+        stream->to_info(info);
+        PPBOX_CaptureSetStream(capture->capture_, itrack, &info);
+    }
+    on_capture_sample(capture, itrack, hnsPresentationTime, hnsSampleDuration, cbSample, pSample);
+}
+
+void Capture::on_capture_sample(
+    Capture ^ capture, 
+    UINT itrack,
+    ULONGLONG hnsPresentationTime,
+    ULONGLONG hnsSampleDuration,
+    DWORD cbSample,
+    BYTE* pSample)
+{
+	PPBOX_Sample sample;
+    memset(&sample, 0, sizeof(sample));
+    sample.itrack = itrack;
+    sample.decode_time = hnsPresentationTime;
+    sample.duration = (PP_uint32)hnsSampleDuration;
+    sample.size = cbSample;
+    sample.buffer = pSample;
+    Stream ^ stream = capture->media_->streams[itrack];
+    if (stream->type == StreamType::video) {
+        BYTE * p = (BYTE *)memchr(pSample, 0x65, cbSample < 50 ? cbSample : 50);
+        if (p && *(p - 1) == 0x01) {
+            sample.flags |= PPBOX_SampleFlag::sync;
+        }
+    } else {
+    }
+    PPBOX_CapturePutSample(capture->capture_, &sample);
+}
+

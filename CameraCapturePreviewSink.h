@@ -26,6 +26,7 @@ namespace PpboxRT
 
         CameraCapturePreviewSink()
             : callback_(NULL)
+            , pixels_(NULL)
         {
         }
 
@@ -33,15 +34,23 @@ namespace PpboxRT
             Callback_OnFrameAvailable callback, 
             Capture ^ capture);
 
+        void close();
+
         IFACEMETHODIMP_(void) OnFrameAvailable(
             DXGI_FORMAT format,
             UINT width,
             UINT height,
             BYTE* pixels);
 
+        BYTE* pixels() const
+        {
+            return pixels_;
+        }
+
     private:
         Callback_OnFrameAvailable callback_;
         Capture ^ capture_;
+        BYTE* pixels_;
     };
 
 }

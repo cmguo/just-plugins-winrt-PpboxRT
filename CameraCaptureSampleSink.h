@@ -8,6 +8,8 @@ using namespace Windows::Phone::Media::Capture;
 
 namespace PpboxRT
 {
+    
+    ref class Capture;
 
     class CameraCaptureSampleSink :
         public Microsoft::WRL::RuntimeClass<
@@ -15,15 +17,26 @@ namespace PpboxRT
         ICameraCaptureSampleSink>
     {
     public:
+        typedef void (*Callback_OnSampleAvailable)(
+            Capture ^ capture, 
+            UINT itrack,
+            ULONGLONG hnsPresentationTime,
+            ULONGLONG hnsSampleDuration,
+            DWORD cbSample,
+            BYTE* pSample);
+
         CameraCaptureSampleSink()
-            : capture_(NULL)
+            : callback_(NULL)
             , itrack_(UINT32(-1))
         {
         }
 
         void init(
-            PPBOX_HANDLE capture, 
-            UINT32 itrack);
+            Callback_OnSampleAvailable callback, 
+            Capture ^ capture, 
+            UINT itrack);
+
+        void close();
 
         IFACEMETHODIMP_(void) OnSampleAvailable(
             ULONGLONG hnsPresentationTime,
@@ -32,8 +45,9 @@ namespace PpboxRT
             BYTE* pSample);
 
     private:
-        PPBOX_HANDLE capture_;
-        UINT32 itrack_;
+        Callback_OnSampleAvailable callback_;
+        Capture ^ capture_;
+        UINT itrack_;
     };
 
 }

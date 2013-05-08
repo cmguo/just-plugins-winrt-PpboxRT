@@ -40,6 +40,15 @@ namespace PpboxRT
         video_wmv = PPBOX_VideoSubType::WMV3, 
     };
 
+	public enum class FormatType: int
+    {
+        none                    = PPBOX_FormatType::none, 
+        video_avc_packet        = PPBOX_FormatType::video_avc_packet, 
+        video_avc_byte_stream   = PPBOX_FormatType::video_avc_byte_stream, 
+        audio_raw               = PPBOX_FormatType::audio_raw, 
+        audio_adts              = PPBOX_FormatType::audio_adts,
+    };
+
     public value struct VideoInfo
     {
         uint32 width;
@@ -89,6 +98,11 @@ namespace PpboxRT
             void set(AudioInfo t) { audio_ = t; } 
         }
 
+		property FormatType format_type { 
+            FormatType get() { return format_type_; } 
+            void set(FormatType t) { format_type_ = t; } 
+        }
+
 		property Array<uint8> ^ codec_data { 
             Array<uint8> ^ get() { return codec_data_; } 
             void set(Array<uint8> const ^ t) { codec_data_ = ref new Array<uint8>(t); } 
@@ -113,6 +127,7 @@ namespace PpboxRT
 		VideoInfo video_;
 		AudioInfo audio_;
 
+        FormatType format_type_;
 		Array<uint8> ^ codec_data_;
 	};
 

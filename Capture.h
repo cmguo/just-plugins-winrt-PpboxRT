@@ -13,7 +13,7 @@ namespace PpboxRT
 
     ref class Capture;
 
-    public delegate void PreviewFrameAvailableHandler(Capture ^ sender, Sample ^ s);
+    public delegate void PreviewFrameAvailableHandler(Capture ^ sender);
 
     public ref class Capture sealed
     {
@@ -35,6 +35,9 @@ namespace PpboxRT
     public:
         event PreviewFrameAvailableHandler ^ preview_frame_available;
 
+        void get_preview_pixels(
+            Platform::WriteOnlyArray<int32> ^ out);
+
 	private:
         HRESULT setup_preview_sink();
 
@@ -49,6 +52,22 @@ namespace PpboxRT
             UINT height,
             BYTE* pixels);
 
+        static void on_capture_first_sample(
+            Capture ^ capture, 
+            UINT itrack,
+            ULONGLONG hnsPresentationTime,
+            ULONGLONG hnsSampleDuration,
+            DWORD cbSample,
+            BYTE* pSample);
+
+        static void on_capture_sample(
+            Capture ^ capture, 
+            UINT itrack,
+            ULONGLONG hnsPresentationTime,
+            ULONGLONG hnsSampleDuration,
+            DWORD cbSample,
+            BYTE* pSample);
+
 	private:
         CRITICAL_SECTION mutex_;
         PPBOX_HANDLE capture_;
@@ -60,6 +79,7 @@ namespace PpboxRT
         CameraCapturePreviewSink* pCameraCapturePreviewSink;
         CameraCaptureSampleSink* pCameraCaptureSampleSinkVideo;
         CameraCaptureSampleSink* pCameraCaptureSampleSinkAudio;
+        Media ^ media_;
     };
 
 }
