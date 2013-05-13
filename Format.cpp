@@ -76,10 +76,10 @@ Sample::Sample(
 {
 	index_ = sample.itrack;
 	flag_ = 0;
-	if (sample.flags & PPBOX_SampleFlag::sync) {
+	if (sample.flags & PPBOX_SampleFlag_sync) {
 		flag_ |= sync;
 	}
-	if (sample.flags & PPBOX_SampleFlag::discontinuity) {
+	if (sample.flags & PPBOX_SampleFlag_discontinuity) {
 		flag_ |= discontinue;
 	}
 	time_ = sample.decode_time + sample.composite_time_delta;

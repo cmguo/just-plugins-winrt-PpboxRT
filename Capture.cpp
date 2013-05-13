@@ -229,7 +229,7 @@ void Capture::on_capture_sample(
     if (stream->type == StreamType::video) {
         BYTE * p = (BYTE *)memchr(pSample, 0x65, cbSample < 50 ? cbSample : 50);
         if (p && *(p - 1) == 0x01) {
-            sample.flags |= PPBOX_SampleFlag::sync;
+            sample.flags |= PPBOX_SampleFlag_sync;
         }
     } else {
     }
