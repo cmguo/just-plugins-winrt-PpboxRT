@@ -3,7 +3,7 @@
 using namespace Platform;
 using namespace Windows::Foundation::Collections;
 
-#include <plugins/ppbox/ppbox_dynamic.h>
+#include <plugins/ppbox/ppbox_runtime.h>
 
 namespace PpboxRT
 {
