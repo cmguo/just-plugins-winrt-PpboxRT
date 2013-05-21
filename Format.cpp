@@ -2,7 +2,6 @@
 
 #include <windows.h>
 
-#define PPBOX_IMPORT_FUNC
 #include "Format.h"
 
 using namespace PpboxRT;
