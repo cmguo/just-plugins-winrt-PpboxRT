@@ -182,7 +182,7 @@ void Capture::on_capture_first_sample(
         BYTE * b = p - 4;
         p = (BYTE *)memchr(pSample, 0x65, cbSample);
         BYTE * e = p - 4;
-        stream->codec_data = ArrayReference<PP_uchar>(b, e - b);
+        stream->codec_data = ArrayReference<PP_ubyte>(b, e - b);
         PPBOX_StreamInfo info;
         stream->to_info(info);
         PPBOX_CaptureSetStream(capture->capture_, itrack, &info);
@@ -195,14 +195,14 @@ void Capture::on_capture_first_sample(
             16000, 12000, 11025, 8000,  
             7350,  
         };
-        PP_uchar object_type = 2; // AAC LC
-        PP_uchar frequency_index = std::find(frequency_table, frequency_table + 13, stream->audio.sample_rate) - frequency_table;
-        PP_uchar channel_count = stream->audio.channel_count;
-        PP_uchar AacConfig[2] = {
+        PP_ubyte object_type = 2; // AAC LC
+        PP_ubyte frequency_index = std::find(frequency_table, frequency_table + 13, stream->audio.sample_rate) - frequency_table;
+        PP_ubyte channel_count = stream->audio.channel_count;
+        PP_ubyte AacConfig[2] = {
             (object_type << 3) | (frequency_index >> 1), 
             (frequency_index << 7) | (channel_count << 3)
         };
-        stream->codec_data = ArrayReference<PP_uchar>(AacConfig, sizeof(AacConfig));
+        stream->codec_data = ArrayReference<PP_ubyte>(AacConfig, sizeof(AacConfig));
         PPBOX_StreamInfo info;
         stream->to_info(info);
         PPBOX_CaptureSetStream(capture->capture_, itrack, &info);
@@ -222,7 +222,7 @@ void Capture::on_capture_sample(
     memset(&sample, 0, sizeof(sample));
     sample.itrack = itrack;
     sample.decode_time = hnsPresentationTime;
-    sample.duration = (PP_uint32)hnsSampleDuration;
+    sample.duration = (PP_uint)hnsSampleDuration;
     sample.size = cbSample;
     sample.buffer = pSample;
     Stream ^ stream = capture->media_->streams[itrack];

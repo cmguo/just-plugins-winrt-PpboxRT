@@ -36,10 +36,10 @@ void Demuxer::async_open(
 Error Demuxer::get_media(
 	Media ^* media)
 {
-	PP_uint64 d = PPBOX_GetDuration();
-	PP_uint32 n = PPBOX_GetStreamCount();
+	PP_ulong d = PPBOX_GetDuration();
+	PP_uint n = PPBOX_GetStreamCount();
 	Array<Stream ^> ^ streams = ref new Platform::Array<Stream ^>(n);
-	for (PP_uint32 i = 0; i < n; ++i) {
+	for (PP_uint i = 0; i < n; ++i) {
 		PPBOX_StreamInfo info;
 		PPBOX_GetStreamInfo(i, &info);
 		Stream ^ s = ref new Stream(info);
@@ -53,7 +53,7 @@ Error Demuxer::seek(
 	uint64 time)
 {
     EnterCriticalSection(&mutex_);
-	PP_err ec = PPBOX_Seek((PP_uint32)(time / 10000));
+	PP_err ec = PPBOX_Seek((PP_uint)(time / 10000));
     LeaveCriticalSection(&mutex_);
 	return (Error)ec;
 }
@@ -77,8 +77,8 @@ void Demuxer::close()
 }
 
 void Demuxer::s_call_back(
-	void * ctx, 
-	long ec)
+	PP_context ctx, 
+	PP_err ec)
 {
 	Demuxer ^ inst = *(Demuxer ^ *)ctx;
 	inst->self_ref_ = nullptr;

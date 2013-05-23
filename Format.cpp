@@ -34,8 +34,8 @@ Stream::Stream(
 void Stream::to_info(
     PPBOX_StreamInfo & info)
 {
-    info.type = (PP_uint32)type_;
-    info.sub_type = (PP_uint32)sub_type_;
+    info.type = (PP_uint)type_;
+    info.sub_type = (PP_uint)sub_type_;
     info.time_scale = time_scale_;
     info.bitrate = bitrate_;
 	if (type_ == StreamType::video) {
@@ -47,9 +47,9 @@ void Stream::to_info(
 		info.audio_format.sample_rate = audio_.sample_rate;
 		info.audio_format.sample_size = audio_.sample_size;
 	}
-    info.format_type = (PP_uint32)format_type;
+    info.format_type = (PP_uint)format_type;
     info.format_size = codec_data_->Length;
-    PP_uchar * buffer = new PP_uchar[codec_data_->Length];
+    PP_ubyte * buffer = new PP_ubyte[codec_data_->Length];
     memcpy(buffer, codec_data_->Data, codec_data_->Length);
     info.format_buffer = buffer;
 }

@@ -70,7 +70,7 @@ namespace PpboxRT
 
 	private:
         CRITICAL_SECTION mutex_;
-        PPBOX_HANDLE capture_;
+        PP_handle capture_;
 
     private:
         Windows::Phone::Media::Capture::AudioVideoCaptureDevice ^pAudioVideoCaptureDevice;

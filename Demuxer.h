@@ -31,8 +31,8 @@ namespace PpboxRT
 
 	private:
 		static void s_call_back(
-			void * ctx, 
-			long ec);
+			PP_context ctx, 
+			PP_err ec);
 
 	private:
 		Demuxer ^ self_ref_;
