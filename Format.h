@@ -53,7 +53,8 @@ namespace PpboxRT
     {
         uint32 width;
 		uint32 height;
-        uint32 frame_rate;
+        uint32 frame_rate_num;
+        uint32 frame_rate_den;
     };
 
     public value struct AudioInfo
@@ -61,6 +62,7 @@ namespace PpboxRT
         uint32 channel_count;
         uint32 sample_size;
         uint32 sample_rate;
+        uint32 sample_per_frame;
     };
 
 	public delegate void Callback(Error);
