@@ -49,6 +49,7 @@ Error Capture::set_media(
 {
     PPBOX_CaptureConfigData config;
     config.stream_count = media->streams->Length;
+    config.ordered = false;
     config.get_sample_buffers = NULL;
     config.free_sample = NULL;
     PP_err ec = ppbox_success;
