@@ -19,15 +19,15 @@ Stream::Stream(
     time_scale_ = info.time_scale;
     bitrate_ = info.bitrate;
 	if (type_ == StreamType::video) {
-		video_.width = info.video_format.width;
-		video_.height = info.video_format.height;
-        video_.frame_rate_num = info.video_format.frame_rate_num;
-        video_.frame_rate_den = info.video_format.frame_rate_den;
+		video_.width = info.format.video.width;
+		video_.height = info.format.video.height;
+        video_.frame_rate_num = info.format.video.frame_rate_num;
+        video_.frame_rate_den = info.format.video.frame_rate_den;
 	} else {
-		audio_.channel_count = info.audio_format.channel_count;
-		audio_.sample_size = info.audio_format.sample_size;
-        audio_.sample_rate = info.audio_format.sample_rate;
-        audio_.sample_per_frame = info.audio_format.sample_per_frame;
+		audio_.channel_count = info.format.audio.channel_count;
+		audio_.sample_size = info.format.audio.sample_size;
+        audio_.sample_rate = info.format.audio.sample_rate;
+        audio_.sample_per_frame = info.format.audio.sample_per_frame;
     }
     format_type = (FormatType)info.format_type;
 	codec_data_ = ref new Platform::Array<uint8>((uint8 *)info.format_buffer, info.format_size);
@@ -41,15 +41,15 @@ void Stream::to_info(
     info.time_scale = time_scale_;
     info.bitrate = bitrate_;
 	if (type_ == StreamType::video) {
-		info.video_format.width = video_.width;
-		info.video_format.height = video_.height;
-        info.video_format.frame_rate_num = video_.frame_rate_num;
-        info.video_format.frame_rate_den = video_.frame_rate_den;
+		info.format.video.width = video_.width;
+		info.format.video.height = video_.height;
+        info.format.video.frame_rate_num = video_.frame_rate_num;
+        info.format.video.frame_rate_den = video_.frame_rate_den;
 	} else {
-		info.audio_format.channel_count = audio_.channel_count;
-        info.audio_format.sample_size = audio_.sample_size;
-        info.audio_format.sample_rate = audio_.sample_rate;
-        info.audio_format.sample_per_frame = audio_.sample_per_frame;
+		info.format.audio.channel_count = audio_.channel_count;
+        info.format.audio.sample_size = audio_.sample_size;
+        info.format.audio.sample_rate = audio_.sample_rate;
+        info.format.audio.sample_per_frame = audio_.sample_per_frame;
 	}
     info.format_type = (PP_uint)format_type;
     info.format_size = codec_data_->Length;
@@ -79,10 +79,10 @@ Sample::Sample(
 {
 	index_ = sample.itrack;
 	flag_ = 0;
-	if (sample.flags & PPBOX_SampleFlag_sync) {
+	if (sample.flags & PPBOX_SampleFlag::sync) {
 		flag_ |= sync;
 	}
-	if (sample.flags & PPBOX_SampleFlag_discontinuity) {
+	if (sample.flags & PPBOX_SampleFlag::discontinuity) {
 		flag_ |= discontinue;
 	}
 	time_ = sample.decode_time + sample.composite_time_delta;

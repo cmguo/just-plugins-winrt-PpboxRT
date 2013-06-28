@@ -3,7 +3,7 @@
 using namespace Platform;
 using namespace Windows::Foundation::Collections;
 
-#include <plugins/ppbox/ppbox_runtime.h>
+#include <ppbox/ppbox/ppbox_runtime.h>
 
 namespace PpboxRT
 {
@@ -27,26 +27,26 @@ namespace PpboxRT
 
 	public enum class StreamType: int
     {
-        video = PPBOX_StreamType_VIDE, 
-        audio = PPBOX_StreamType_AUDI, 
+        video = PPBOX_StreamType::VIDE, 
+        audio = PPBOX_StreamType::AUDI, 
     };
 
 	public enum class StreamSubType: int
     {
-        video_avc = PPBOX_VideoSubType_AVC1, 
-        audio_aac = PPBOX_AudioSubType_MP4A, 
-        audio_mp3 = PPBOX_AudioSubType_MP1A, 
-        audio_wma = PPBOX_AudioSubType_WMA2,
-        video_wmv = PPBOX_VideoSubType_WMV3, 
+        video_avc = PPBOX_VideoSubType::AVC1, 
+        audio_aac = PPBOX_AudioSubType::MP4A, 
+        audio_mp3 = PPBOX_AudioSubType::MP1A, 
+        audio_wma = PPBOX_AudioSubType::WMA2,
+        video_wmv = PPBOX_VideoSubType::WMV3, 
     };
 
 	public enum class FormatType: int
     {
-        none                    = PPBOX_FormatType_none, 
-        video_avc_packet        = PPBOX_FormatType_video_avc_packet, 
-        video_avc_byte_stream   = PPBOX_FormatType_video_avc_byte_stream, 
-        audio_raw               = PPBOX_FormatType_audio_raw, 
-        audio_adts              = PPBOX_FormatType_audio_adts,
+        none                    = PPBOX_FormatType::none, 
+        video_avc_packet        = PPBOX_FormatType::video_avc_packet, 
+        video_avc_byte_stream   = PPBOX_FormatType::video_avc_byte_stream, 
+        audio_raw               = PPBOX_FormatType::audio_raw, 
+        audio_adts              = PPBOX_FormatType::audio_adts,
     };
 
     public value struct VideoInfo
