@@ -83,6 +83,7 @@ void Demuxer::s_call_back(
 	Demuxer ^ inst = *(Demuxer ^ *)ctx;
 	inst->self_ref_ = nullptr;
 
-	inst->callback_->Invoke((Error)ec);
+    Callback ^ callback = inst->callback_;
 	inst->callback_ = nullptr;
+	callback->Invoke((Error)ec);
 }
