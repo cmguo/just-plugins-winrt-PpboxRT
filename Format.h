@@ -3,7 +3,8 @@
 using namespace Platform;
 using namespace Windows::Foundation::Collections;
 
-#include <ppbox/ppbox/ppbox_runtime.h>
+#include <ppbox/ppbox/IPpboxBoostTypes.h>
+#include <ppbox/ppbox/IPpboxRuntime.h>
 
 namespace PpboxRT
 {
