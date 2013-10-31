@@ -4,6 +4,7 @@ using namespace Platform;
 using namespace Windows::Foundation::Collections;
 
 #include <ppbox/ppbox/IPpboxBoostTypes.h>
+#define PPBOX_DISABLE_AUTO_START
 #include <ppbox/ppbox/IPpboxRuntime.h>
 
 namespace PpboxRT
