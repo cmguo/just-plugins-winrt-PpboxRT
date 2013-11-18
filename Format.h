@@ -37,7 +37,7 @@ namespace PpboxRT
     {
         video_avc = PPBOX_VideoSubType::AVC1, 
         audio_aac = PPBOX_AudioSubType::MP4A, 
-        audio_mp3 = PPBOX_AudioSubType::MP1A, 
+        audio_mp3 = PPBOX_AudioSubType::MP3, 
         audio_wma = PPBOX_AudioSubType::WMA2,
         video_wmv = PPBOX_VideoSubType::WMV3, 
     };
