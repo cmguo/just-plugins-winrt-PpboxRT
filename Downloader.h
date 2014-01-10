@@ -31,7 +31,8 @@ namespace PpboxRT
 		Error get_stat(
 			DownloadStatistc * stat);
 
-		void close();
+        [Windows::Foundation::Metadata::DefaultOverloadAttribute]
+		void Close();
 
 	private:
 		static void s_call_back(

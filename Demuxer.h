@@ -27,7 +27,8 @@ namespace PpboxRT
 		Error get_sample(
 			Sample ^* sample);
 
-		void close();
+        [Windows::Foundation::Metadata::DefaultOverloadAttribute]
+		void Close();
 
 	private:
 		static void s_call_back(
