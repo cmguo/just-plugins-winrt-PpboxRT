@@ -71,7 +71,7 @@ Error Demuxer::get_sample(
 	return (Error)ec;
 }
 
-void Demuxer::close()
+void Demuxer::Close()
 {
 	PPBOX_Close();
 }

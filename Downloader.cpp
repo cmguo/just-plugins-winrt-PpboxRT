@@ -51,7 +51,7 @@ Error Downloader::get_stat(
 	return ec;
 }
 
-void Downloader::close()
+void Downloader::Close()
 {
 	PPBOX_DownloadClose(downloader_);
 }
