@@ -16,8 +16,8 @@ Error Blob::insert(
 
 	WideCharToMultiByte(CP_ACP, 0, key->Data(), -1, keyc, MAX_PATH, 0, 0);
 
-    PPBOX_ConstBuffer buf = {data->Data, data->Length};
-    Error ec = (Error)PPBOX_InsertBlob(keyc, &buf, remove_on_get);
+    JUST_ConstBuffer buf = {data->Data, data->Length};
+    Error ec = (Error)JUST_InsertBlob(keyc, &buf, remove_on_get);
     return ec;
 }
 
@@ -29,8 +29,8 @@ Error Blob::get(
 
 	WideCharToMultiByte(CP_ACP, 0, key->Data(), -1, keyc, MAX_PATH, 0, 0);
 
-    PPBOX_ConstBuffer buf = {0, 0};
-    Error ec = (Error)PPBOX_GetBlob(keyc, &buf);
+    JUST_ConstBuffer buf = {0, 0};
+    Error ec = (Error)JUST_GetBlob(keyc, &buf);
     if (ec == Error::success) {
         *data = ref new Array<uint8>((uint8 *)buf.data, buf.len);
     }
@@ -44,6 +44,6 @@ Error Blob::remove(
 
 	WideCharToMultiByte(CP_ACP, 0, key->Data(), -1, keyc, MAX_PATH, 0, 0);
 
-    Error ec = (Error)PPBOX_RemoveBlob(keyc);
+    Error ec = (Error)JUST_RemoveBlob(keyc);
 	return ec;
 }

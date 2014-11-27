@@ -34,15 +34,15 @@ void Downloader::async_open(
 
 	callback_ = callback;
 	downloader_ = 
-        PPBOX_DownloadOpen(playlinkc, configc, savefilec, s_call_back);
+        JUST_DownloadOpen(playlinkc, configc, savefilec, s_call_back);
     instances()[downloader_] = this;
 }
 
 Error Downloader::get_stat(
     DownloadStatistc * stat)
 {
-    PPBOX_DownloadStatistic cstat;
-    Error ec = (Error)PPBOX_GetDownloadInfo(downloader_, &cstat);
+    JUST_DownloadStatistic cstat;
+    Error ec = (Error)JUST_GetDownloadInfo(downloader_, &cstat);
     if (ec == Error::success) {
         stat->total_size = cstat.total_size;
         stat->finish_size = cstat.finish_size;
@@ -53,7 +53,7 @@ Error Downloader::get_stat(
 
 void Downloader::Close()
 {
-	PPBOX_DownloadClose(downloader_);
+	JUST_DownloadClose(downloader_);
 }
 
 std::map<PP_handle, Downloader ^> & Downloader::instances()

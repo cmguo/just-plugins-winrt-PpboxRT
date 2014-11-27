@@ -20,12 +20,12 @@ Error Ppbox::start(
 	WideCharToMultiByte(CP_ACP, 0, pid->Data(), -1, pidc, MAX_PATH, 0, 0);
 	WideCharToMultiByte(CP_ACP, 0, auth->Data(), -1, authc, MAX_PATH, 0, 0);
 
-    Error ec = (Error)PPBOX_StartEngine(gidc, pidc, authc);
+    Error ec = (Error)JUST_StartEngine(gidc, pidc, authc);
     return ec;
 }
 
 Error Ppbox::stop()
 {
-    Error ec = (Error)PPBOX_StopEngine();
+    Error ec = (Error)JUST_StopEngine();
 	return ec;
 }

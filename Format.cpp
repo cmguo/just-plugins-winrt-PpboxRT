@@ -12,7 +12,7 @@ Stream::Stream()
 }
 
 Stream::Stream(
-	PPBOX_StreamInfo & info)
+	JUST_StreamInfo & info)
 {
 	type_ = (StreamType)info.type;
 	sub_type_ = (StreamSubType)info.sub_type;
@@ -34,7 +34,7 @@ Stream::Stream(
 }
 
 void Stream::to_info(
-    PPBOX_StreamInfo & info)
+    JUST_StreamInfo & info)
 {
     info.type = (PP_uint)type_;
     info.sub_type = (PP_uint)sub_type_;
@@ -75,14 +75,14 @@ Sample::Sample()
 }
 
 Sample::Sample(
-	PPBOX_Sample & sample)
+	JUST_Sample & sample)
 {
 	index_ = sample.itrack;
 	flag_ = 0;
-	if (sample.flags & PPBOX_SampleFlag::sync) {
+	if (sample.flags & JUST_SampleFlag::sync) {
 		flag_ |= sync;
 	}
-	if (sample.flags & PPBOX_SampleFlag::discontinuity) {
+	if (sample.flags & JUST_SampleFlag::discontinuity) {
 		flag_ |= discontinue;
 	}
 	time_ = sample.decode_time + sample.composite_time_delta;

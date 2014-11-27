@@ -30,18 +30,18 @@ void Demuxer::async_open(
 
 	self_ref_ = this;
 	callback_ = callback;
-	PPBOX_AsyncOpenEx(playlinkc, configc, &self_ref_, s_call_back);
+	JUST_AsyncOpenEx(playlinkc, configc, &self_ref_, s_call_back);
 }
 
 Error Demuxer::get_media(
 	Media ^* media)
 {
-	PP_ulong d = PPBOX_GetDuration();
-	PP_uint n = PPBOX_GetStreamCount();
+	PP_ulong d = JUST_GetDuration();
+	PP_uint n = JUST_GetStreamCount();
 	Array<Stream ^> ^ streams = ref new Platform::Array<Stream ^>(n);
 	for (PP_uint i = 0; i < n; ++i) {
-		PPBOX_StreamInfo info;
-		PPBOX_GetStreamInfo(i, &info);
+		JUST_StreamInfo info;
+		JUST_GetStreamInfo(i, &info);
 		Stream ^ s = ref new Stream(info);
 		streams->set(i, s);
 	}
@@ -53,7 +53,7 @@ Error Demuxer::seek(
 	uint64 time)
 {
     EnterCriticalSection(&mutex_);
-	PP_err ec = PPBOX_Seek((PP_uint)(time / 10000));
+	PP_err ec = JUST_Seek((PP_uint)(time / 10000));
     LeaveCriticalSection(&mutex_);
 	return (Error)ec;
 }
@@ -62,8 +62,8 @@ Error Demuxer::get_sample(
 	Sample ^* sample)
 {
     EnterCriticalSection(&mutex_);
-	PPBOX_Sample s;
-	PP_err ec = PPBOX_ReadSample(&s);
+	JUST_Sample s;
+	PP_err ec = JUST_ReadSample(&s);
 	if (ec == 0) {
 		*sample = ref new Sample(s);
 	}
@@ -73,7 +73,7 @@ Error Demuxer::get_sample(
 
 void Demuxer::Close()
 {
-	PPBOX_Close();
+	JUST_Close();
 }
 
 void Demuxer::s_call_back(

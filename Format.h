@@ -3,9 +3,9 @@
 using namespace Platform;
 using namespace Windows::Foundation::Collections;
 
-#include <ppbox/ppbox/IPpboxBoostTypes.h>
-#define PPBOX_DISABLE_AUTO_START
-#include <ppbox/ppbox/IPpboxRuntime.h>
+#include <just/just/IPpboxBoostTypes.h>
+#define JUST_DISABLE_AUTO_START
+#include <just/just/IPpboxRuntime.h>
 
 namespace PpboxRT
 {
@@ -29,26 +29,26 @@ namespace PpboxRT
 
 	public enum class StreamType: int
     {
-        video = PPBOX_StreamType::VIDE, 
-        audio = PPBOX_StreamType::AUDI, 
+        video = JUST_StreamType::VIDE, 
+        audio = JUST_StreamType::AUDI, 
     };
 
 	public enum class StreamSubType: int
     {
-        video_avc = PPBOX_VideoSubType::AVC1, 
-        audio_aac = PPBOX_AudioSubType::MP4A, 
-        audio_mp3 = PPBOX_AudioSubType::MP3, 
-        audio_wma = PPBOX_AudioSubType::WMA2,
-        video_wmv = PPBOX_VideoSubType::WMV3, 
+        video_avc = JUST_VideoSubType::AVC1, 
+        audio_aac = JUST_AudioSubType::MP4A, 
+        audio_mp3 = JUST_AudioSubType::MP3, 
+        audio_wma = JUST_AudioSubType::WMA2,
+        video_wmv = JUST_VideoSubType::WMV3, 
     };
 
 	public enum class FormatType: int
     {
-        none                    = PPBOX_FormatType::none, 
-        video_avc_packet        = PPBOX_FormatType::video_avc_packet, 
-        video_avc_byte_stream   = PPBOX_FormatType::video_avc_byte_stream, 
-        audio_raw               = PPBOX_FormatType::audio_raw, 
-        audio_adts              = PPBOX_FormatType::audio_adts,
+        none                    = JUST_FormatType::none, 
+        video_avc_packet        = JUST_FormatType::video_avc_packet, 
+        video_avc_byte_stream   = JUST_FormatType::video_avc_byte_stream, 
+        audio_raw               = JUST_FormatType::audio_raw, 
+        audio_adts              = JUST_FormatType::audio_adts,
     };
 
     public value struct VideoInfo
@@ -117,10 +117,10 @@ namespace PpboxRT
 
 	internal:
 		Stream(
-			PPBOX_StreamInfo & stream);
+			JUST_StreamInfo & stream);
 
         void to_info(
-			PPBOX_StreamInfo & stream);
+			JUST_StreamInfo & stream);
 
 	private:
 		StreamType type_;
@@ -181,7 +181,7 @@ namespace PpboxRT
 
 	internal:
 		Sample(
-			PPBOX_Sample & sample);
+			JUST_Sample & sample);
 
 	private:
 		enum

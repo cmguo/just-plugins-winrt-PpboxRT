@@ -36,9 +36,9 @@ Error Capture::open(
     WideCharToMultiByte(CP_ACP, 0, device->ToString()->Data(), -1, namec, MAX_PATH, 0, 0);
     WideCharToMultiByte(CP_ACP, 0, dest->Data(), -1, destc, MAX_PATH, 0, 0);
 
-    capture_ = PPBOX_CaptureCreate(namec, destc);
+    capture_ = JUST_CaptureCreate(namec, destc);
     if (capture_ == NULL) {
-        return (Error)PPBOX_GetLastError();
+        return (Error)JUST_GetLastError();
     }
 
     return Error::success;
@@ -47,15 +47,15 @@ Error Capture::open(
 Error Capture::set_media(
     Media ^ media)
 {
-    PPBOX_CaptureConfigData config;
+    JUST_CaptureConfigData config;
     config.stream_count = media->streams->Length;
     config.flags = 0;
     config.get_sample_buffers = NULL;
     config.free_sample = NULL;
-    PP_err ec = ppbox_success;
-    ec = PPBOX_CaptureInit(capture_, &config);
+    PP_err ec = just_success;
+    ec = JUST_CaptureInit(capture_, &config);
 
-    if (ec != ppbox_success) {
+    if (ec != just_success) {
         return (Error)ec;
     }
 
@@ -63,10 +63,10 @@ Error Capture::set_media(
     {
         Stream ^ stream = media->streams[i];
         setup_sample_sink(stream->type, i);
-        PPBOX_StreamInfo info;
+        JUST_StreamInfo info;
         stream->to_info(info);
-        ec = PPBOX_CaptureSetStream(capture_, i, &info);
-        if (ec != ppbox_success)
+        ec = JUST_CaptureSetStream(capture_, i, &info);
+        if (ec != just_success)
             break;
     }
 
@@ -80,7 +80,7 @@ Error Capture::set_media(
 
 void Capture::close()
 {
-    PPBOX_CaptureDestroy(capture_);
+    JUST_CaptureDestroy(capture_);
 
     SAFE_CLOSE_RELEASE(pCameraCaptureSampleSinkAudio);
     SAFE_CLOSE_RELEASE(pCameraCaptureSampleSinkVideo);
@@ -162,7 +162,7 @@ void Capture::on_preview_sample(
     UINT height,
     BYTE* pixels)
 {
-    //PPBOX_Sample sample;
+    //JUST_Sample sample;
     //sample.size = width * height * 4;
     //sample.buffer = pixels;
     capture->preview_frame_available(capture);
@@ -184,9 +184,9 @@ void Capture::on_capture_first_sample(
         p = (BYTE *)memchr(pSample, 0x65, cbSample);
         BYTE * e = p - 4;
         stream->codec_data = ArrayReference<PP_ubyte>(b, e - b);
-        PPBOX_StreamInfo info;
+        JUST_StreamInfo info;
         stream->to_info(info);
-        PPBOX_CaptureSetStream(capture->capture_, itrack, &info);
+        JUST_CaptureSetStream(capture->capture_, itrack, &info);
     } else {
         capture->pCameraCaptureSampleSinkAudio->init(on_capture_sample, capture, itrack);
         uint32 frequency_table[] = 
@@ -204,9 +204,9 @@ void Capture::on_capture_first_sample(
             (frequency_index << 7) | (channel_count << 3)
         };
         stream->codec_data = ArrayReference<PP_ubyte>(AacConfig, sizeof(AacConfig));
-        PPBOX_StreamInfo info;
+        JUST_StreamInfo info;
         stream->to_info(info);
-        PPBOX_CaptureSetStream(capture->capture_, itrack, &info);
+        JUST_CaptureSetStream(capture->capture_, itrack, &info);
     }
     on_capture_sample(capture, itrack, hnsPresentationTime, hnsSampleDuration, cbSample, pSample);
 }
@@ -219,7 +219,7 @@ void Capture::on_capture_sample(
     DWORD cbSample,
     BYTE* pSample)
 {
-	PPBOX_Sample sample;
+	JUST_Sample sample;
     memset(&sample, 0, sizeof(sample));
     sample.itrack = itrack;
     sample.decode_time = hnsPresentationTime;
@@ -230,10 +230,10 @@ void Capture::on_capture_sample(
     if (stream->type == StreamType::video) {
         BYTE * p = (BYTE *)memchr(pSample, 0x65, cbSample < 50 ? cbSample : 50);
         if (p && *(p - 1) == 0x01) {
-            sample.flags |= PPBOX_SampleFlag::sync;
+            sample.flags |= JUST_SampleFlag::sync;
         }
     } else {
     }
-    PPBOX_CapturePutSample(capture->capture_, &sample);
+    JUST_CapturePutSample(capture->capture_, &sample);
 }
 
